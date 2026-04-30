@@ -6,6 +6,19 @@ These are the notes from a meeting with the frontend developer that describe wha
 ## API Endpoints
 A index user route : /users [GET]
 A Add a new user route : /users [POST]
+A Show a user route : /users/:id [GET]
+A Authenticate user route : /users/authenticate [POST]
+
+## Product Routes
+A index products route : /products [GET]
+A Add a new product route : /products [POST]
+A Show a product route : /products/:id [GET]
+
+## Order Routes
+A index orders route : /orders [GET]
+A Add a new order route : /orders [POST]
+A Show a order route : /orders/:id [GET]
+
 
 #### Products
 - Index 
