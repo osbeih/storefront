@@ -1,6 +1,8 @@
 import express, { Request, Response } from 'express';
 import { Order, OrderStore } from '../order';
 import jwt from 'jsonwebtoken';
+
+
 const store = new OrderStore();
 
 const index = async (_req: Request, res: Response) => {
@@ -25,10 +27,8 @@ const create = async (req: Request, res: Response) => {
 
     try {
         const order: Order = {
-            product_id: req.body.product_id,
-            quantity: req.body.quantity,
             user_id: req.body.user_id,
-            status: ''
+            status: req.body.status || 'active'
         }
 
         const createdOrder = await store.create(order);
@@ -44,11 +44,26 @@ const deleteOrder = async (req: Request, res: Response) => {
     res.json(order);
 }
 
+const addProduct = async (req: Request, res: Response) => {
+    const orderId: string = req.params.id;
+    const productId: string = req.body.productId;
+    const quantity: number = parseInt(req.body.quantity);
+
+    try {
+        const addedProduct = await store.addProduct(quantity, orderId, productId);
+        res.json(addedProduct);
+    } catch (err) {
+        res.status(400);
+        res.json(err);
+    }
+}
+
 const orderRoutes = (app: express.Application) => {
     app.get('/orders', index);
     app.post('/orders', create);
     app.get('/orders/:id', show);
     app.delete('/orders/:id', deleteOrder);
+    app.post('/orders/:id/products', addProduct);
 }
 
 export default orderRoutes;

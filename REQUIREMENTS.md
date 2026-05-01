@@ -4,55 +4,47 @@ The company stakeholders want to create an online storefront to showcase their g
 These are the notes from a meeting with the frontend developer that describe what endpoints the API needs to supply, as well as data shapes the frontend and backend have agreed meet the requirements of the application. 
 
 ## API Endpoints
-A index user route : /users [GET]
-A Add a new user route : /users [POST]
-A Show a user route : /users/:id [GET]
-A Authenticate user route : /users/authenticate [POST]
 
-## Product Routes
-A index products route : /products [GET]
-A Add a new product route : /products [POST]
-A Show a product route : /products/:id [GET]
+### User Routes
+- **Index**: `/users` [GET] - Returns a list of all users. (Token required)
+- **Show**: `/users/:id` [GET] - Returns a single user by ID. (Token required)
+- **Create**: `/users` [POST] - Creates a new user.
+- **Authenticate**: `/users/authenticate` [POST] - Authenticates a user.
 
-## Order Routes
-A index orders route : /orders [GET]
-A Add a new order route : /orders [POST]
-A Show a order route : /orders/:id [GET]
+### Product Routes
+- **Index**: `/products` [GET] - Returns a list of all products.
+- **Show**: `/products/:id` [GET] - Returns a single product by ID.
+- **Create**: `/products` [POST] - Creates a new product. (Token required)
 
+### Order Routes
+- **Index**: `/orders` [GET] - Returns a list of all orders.
+- **Show**: `/orders/:id` [GET] - Returns a single order by ID.
+- **Create**: `/orders` [POST] - Creates a new order. (Token required)
+- **Add Product**: `/orders/:id/products` [POST] - Adds a product to an order. (Token required)
 
-#### Products
-- Index 
-- Show
-- Create [token required]
-- [OPTIONAL] Top 5 most popular products 
-- [OPTIONAL] Products by category (args: product category)
+## Database Schema
 
-#### Users
-- Index [token required]
-- Show [token required]
-- Create N[token required]
+### Users Table
+- `id`: SERIAL (Primary Key)
+- `firstName`: VARCHAR(100)
+- `lastName`: VARCHAR(100)
+- `password`: VARCHAR(255)
 
-#### Orders
-- Current Order by user (args: user id)[token required]
-- [OPTIONAL] Completed Orders by user (args: user id)[token required]
+### Products Table
+- `id`: SERIAL (Primary Key)
+- `name`: VARCHAR(255)
+- `price`: INTEGER
+- `category`: VARCHAR(100) (Optional)
 
-## Data Shapes
-#### Product
--  id
-- name
-- price
-- [OPTIONAL] category
+### Orders Table
+- `id`: SERIAL (Primary Key)
+- `user_id`: INTEGER (Foreign Key to users.id)
+- `status`: VARCHAR(20) (active or complete)
 
-#### User
-- id
-- firstName
-- lastName
-- password
+### Order_Products Table (Join Table)
+- `id`: SERIAL (Primary Key)
+- `order_id`: INTEGER (Foreign Key to orders.id)
+- `product_id`: INTEGER (Foreign Key to products.id)
+- `quantity`: INTEGER
 
-#### Orders
-- id
-- id of each product in the order
-- quantity of each product in the order
-- user_id
-- status of order (active or complete)
 
