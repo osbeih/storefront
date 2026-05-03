@@ -12,7 +12,7 @@ const corsOptions = {
     optionsSuccessStatus: 200
 }
 
-const app: express.Application = express()
+export const app: express.Application = express()
 const address: string = "127.0.0.1:3000"
 
 app.use(bodyParser.json())

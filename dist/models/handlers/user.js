@@ -1,77 +1,76 @@
-import express, { Request, Response } from 'express';
-import { User, UserStore } from '../user';
-import jwt from 'jsonwebtoken';
-
-
-const store = new UserStore();
-
-const index = async (req: Request, res: Response) => {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const user_1 = require("../user");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const store = new user_1.UserStore();
+const index = async (req, res) => {
     try {
         const authorizationHeader = req.headers.authorization;
         const token = authorizationHeader?.split(' ')[1];
-        jwt.verify(token as string, process.env.TOKEN_SECRET as string);
-    } catch (error) {
+        jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET);
+    }
+    catch (error) {
         res.status(401).json(error);
         return;
     }
     const users = await store.index();
     res.json(users);
-}
-
-const show = async (req: Request, res: Response) => {
+};
+const show = async (req, res) => {
     try {
         const authorizationHeader = req.headers.authorization;
         const token = authorizationHeader?.split(' ')[1];
-        jwt.verify(token as string, process.env.TOKEN_SECRET as string);
-    } catch (error) {
+        jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET);
+    }
+    catch (error) {
         res.status(401).json(error);
         return;
     }
     const user = await store.show(req.params.id);
     res.json(user);
-
-}
-
-const create = async (req: Request, res: Response) => {
-    const user: User = {
+};
+const create = async (req, res) => {
+    const user = {
         first_name: req.body.first_name,
         last_name: req.body.last_name,
         password: req.body.password
-    }
+    };
     try {
         const createdUser = await store.create(user);
-        var token = jwt.sign({ user: createdUser }, process.env.TOKEN_SECRET as string);
+        var token = jsonwebtoken_1.default.sign({ user: createdUser }, process.env.TOKEN_SECRET);
         res.json({ "id": createdUser.id, "first_name": createdUser.first_name, "last_name": createdUser.last_name, "token": token });
-    } catch (err) {
+    }
+    catch (err) {
         res.status(400).json({ "message": `user creation failed ${err}` });
     }
-
-}
-
-const deleteUser = async (req: Request, res: Response) => {
+};
+const deleteUser = async (req, res) => {
     try {
         const authorizationHeader = req.headers.authorization;
         const token = authorizationHeader?.split(' ')[1];
-        jwt.verify(token as string, process.env.TOKEN_SECRET as string);
-    } catch (error) {
+        jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET);
+    }
+    catch (error) {
         res.status(401).json(error);
         return;
     }
     const user = await store.delete(req.params.id);
     res.json(user);
-}
-
-const authenticate = async (req: Request, res: Response) => {
+};
+const authenticate = async (req, res) => {
     try {
-        const user: User = {
+        const user = {
             first_name: req.body.first_name,
             last_name: req.body.last_name,
             password: req.body.password
-        }
+        };
         try {
-            const authedUser = await store.authenticate(user.first_name as string, user.password as string);
+            const authedUser = await store.authenticate(user.first_name, user.password);
             if (authedUser) {
-                const token = jwt.sign({ user: authedUser }, process.env.TOKEN_SECRET as string);
+                const token = jsonwebtoken_1.default.sign({ user: authedUser }, process.env.TOKEN_SECRET);
                 res.json(token);
             }
             else {
@@ -81,18 +80,17 @@ const authenticate = async (req: Request, res: Response) => {
         catch (err) {
             res.status(400).json(err);
         }
-    } catch (error) {
+    }
+    catch (error) {
         res.status(401).json(error);
         return;
     }
-}
-
-const userRoutes = (app: express.Application) => {
+};
+const userRoutes = (app) => {
     app.post('/users/authenticate', authenticate);
     app.get('/users', index);
     app.post('/users', create);
     app.get('/users/:id', show);
     app.delete('/users/:id', deleteUser);
-}
-
-export default userRoutes;
+};
+exports.default = userRoutes;
