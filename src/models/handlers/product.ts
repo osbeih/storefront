@@ -8,28 +8,26 @@ const store = new ProductStore();
 
 const index = async (req: Request, res: Response) => {
     try {
-        const authorizationHeader = req.headers.authorization;
-        const token = authorizationHeader?.split(' ')[1];
-        jwt.verify(token as string, process.env.TOKEN_SECRET as string);
-    } catch (error) {
-        res.status(401).json(error);
-        return;
+        const products = await store.index();
+        res.json(products);
     }
-    const products = await store.index();
-    res.json(products);
-}
+    catch (error) {
+        res.status(500).json(error);
+    }
 
+}
 const show = async (req: Request, res: Response) => {
     try {
-        const authorizationHeader = req.headers.authorization;
-        const token = authorizationHeader?.split(' ')[1];
-        jwt.verify(token as string, process.env.TOKEN_SECRET as string);
-    } catch (error) {
-        res.status(401).json(error);
-        return;
+        const product = await store.show(req.params.id);
+        if (product) {
+            res.json(product);
+        } else {
+            res.status(404).json({ message: 'Product not found' });
+        }
     }
-    const product = await store.show(req.params.id);
-    res.json(product);
+    catch (error) {
+        res.status(500).json(error);
+    }
 }
 
 const create = async (req: Request, res: Response) => {
@@ -63,7 +61,11 @@ const deleteProduct = async (req: Request, res: Response) => {
         return;
     }
     const product = await store.delete(req.params.id);
-    res.json(product);
+    if (product) {
+        res.json(product);
+    } else {
+        res.status(404).json({ message: 'Product not found' });
+    }
 }
 
 const productRoutes = (app: express.Application) => {
